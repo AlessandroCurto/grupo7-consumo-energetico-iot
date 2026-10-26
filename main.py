@@ -46,7 +46,8 @@ from sklearn.ensemble import (AdaBoostClassifier, ExtraTreesClassifier,
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (accuracy_score, balanced_accuracy_score, confusion_matrix,
-                             f1_score, log_loss)
+                             f1_score, log_loss, precision_recall_fscore_support,
+                             precision_score)
 from sklearn.base import clone
 from sklearn.model_selection import GridSearchCV, StratifiedGroupKFold, train_test_split
 from sklearn.naive_bayes import GaussianNB
@@ -267,6 +268,7 @@ def entrenar_y_evaluar(datos, variables):
             "eb_validacion_cruzada": busqueda.best_score_,
             "exactitud_prueba": accuracy_score(y_te, pred),
             "eb_prueba": balanced_accuracy_score(y_te, pred),
+            "vpp_macro_prueba": precision_score(y_te, pred, average="macro"),  # valor predictivo positivo
             "f1_macro_prueba": f1_score(y_te, pred, average="macro"),
             "log_loss_prueba": log_loss(y_te, prob, labels=mejor.classes_),
         })
@@ -342,6 +344,15 @@ def figuras_resultados(tabla, ajustados, X_te, y_te):
         ax.set_yticks(range(len(CLASES)), CLASES)
         ax.set_xlabel("clase predicha"); ax.set_ylabel("clase real"); ax.set_title(nombre)
     fig.tight_layout(); guardar_figura(fig, "fig04_matrices_confusion.png")
+
+    # Tabla por clase: sensibilidad (tasa de VP) y valor predictivo positivo (VPP)
+    filas = []
+    for nombre in ["Naive Bayes", mejor]:
+        vpp, sens, f1, _ = precision_recall_fscore_support(
+            y_te, ajustados[nombre].predict(X_te), labels=CLASES, zero_division=0)
+        for c, a, b, d in zip(CLASES, sens, vpp, f1):
+            filas.append({"modelo": nombre, "clase": c, "sensibilidad": a, "vpp": b, "f1": d})
+    guardar_tabla(pd.DataFrame(filas), "metricas_por_clase.csv")
     return mejor
 
 

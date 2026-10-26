@@ -55,7 +55,7 @@ Simulamos a escala un medidor inteligente. Un **ESP32** prende y apaga 3 LEDs (r
 5. **Optimización de parámetros:** búsqueda en rejilla con validación cruzada de 5 particiones, maximizando la exactitud balanceada.
 6. **Evaluación:**
    - Se separan 70 % de las capturas para entrenar y 30 % para probar. La división se hace **por captura**, así que las ventanas de una misma captura nunca quedan a los dos lados y no hay fuga de información.
-   - Métricas: exactitud, exactitud balanceada, F1 macro y pérdida logarítmica, más la matriz de confusión.
+   - Métricas: exactitud, exactitud balanceada, valor predictivo positivo (VPP, precisión), F1 macro y pérdida logarítmica, más la matriz de confusión y la sensibilidad y el VPP de cada clase.
 7. **Análisis adicional:** efecto del largo de la ventana (0,2 / 0,5 / 1 / 2 s).
 
 ## Resultados principales (ventanas de 0,5 s, prueba)
@@ -100,6 +100,7 @@ Naive Bayes confunde sobre todo `variable` con `parpadeo`: las dos tienen la mis
 3. Revisa los resultados:
    - `resultados/tablas/comparacion_modelos.csv`: los 13 modelos con sus mejores parámetros y métricas.
    - `resultados/tablas/ranking_variables.csv`: la ganancia de información de cada variable.
+   - `resultados/tablas/metricas_por_clase.csv`: sensibilidad (tasa de VP) y VPP de cada clase para Naive Bayes y el mejor modelo.
    - `resultados/figuras/fig01` a `fig05`: las señales, el ranking, la comparación, las matrices de confusión y el largo de ventana.
 
 Con la semilla 42, dos corridas dan los mismos números.
