@@ -167,17 +167,18 @@ def describir(datos, variables):
     print("[3] Variables con mas ganancia de informacion:",
           ", ".join(ranking["variable"].head(4)))
 
-    # Figura 1: ejemplo de la senal de corriente de cada clase (captura completa de 2 s)
+    # Figura 1: senal de corriente de una captura tipica de cada clase (2 s completos)
     df = pd.read_csv(ARCHIVO)
-    fig, axs = plt.subplots(2, 3, figsize=(10, 5), sharey=True)
+    fig, axs = plt.subplots(3, 2, figsize=(6.5, 6.8), sharey=True)
     for ax, c in zip(axs.ravel(), CLASES):
-        w = df[df["clase"] == c]["ventana"].iloc[0]
+        medias = df[df["clase"] == c].groupby("ventana")["corriente_mA"].mean()
+        w = (medias - medias.median()).abs().idxmin()      # captura tipica de la clase
         g = df[df["ventana"] == w]
         ax.plot(g["t_ms"] / 1000, g["corriente_mA"], lw=1.2, color="#30638e")
         ax.set_title(c); ax.grid(alpha=0.3)
-    for ax in axs[1]: ax.set_xlabel("tiempo (s)")
+    for ax in axs[-1]: ax.set_xlabel("tiempo (s)")
     for ax in axs[:, 0]: ax.set_ylabel("corriente (mA)")
-    fig.suptitle("Senal de corriente medida por el INA219 en una ventana de cada clase")
+    fig.suptitle("Senal de corriente medida por el INA219 en una captura de cada clase")
     fig.tight_layout(); guardar_figura(fig, "fig01_senales_por_clase.png")
 
     # Figura 2: ranking de variables
@@ -187,6 +188,26 @@ def describir(datos, variables):
     ax.set_xlabel("ganancia de informacion (informacion mutua)")
     ax.set_title("Ranking de calidad predictiva de las variables")
     fig.tight_layout(); guardar_figura(fig, "fig02_ranking_variables.png")
+
+    # Figura 3: distribucion de cuatro variables por clase
+    fig, axs = plt.subplots(2, 2, figsize=(6.5, 5.6))
+    titulos = {"i_media": "corriente media (mA)", "i_desv": "desviacion de la corriente (mA)",
+               "n_cambios": "cambios bruscos por ventana", "v_media": "voltaje medio (V)"}
+    for ax, (v, t) in zip(axs.ravel(), titulos.items()):
+        ax.boxplot([datos.loc[datos["clase"] == c, v] for c in CLASES], tick_labels=CLASES)
+        ax.set_title(t, fontsize=10); ax.tick_params(axis="x", rotation=35, labelsize=8)
+        ax.grid(alpha=0.3)
+    fig.tight_layout(); guardar_figura(fig, "fig03_distribucion_variables.png")
+
+    # Figura 4: correlacion entre variables (Naive Bayes supone que son independientes)
+    corr = datos[variables].corr()
+    fig, ax = plt.subplots(figsize=(6.5, 5.6))
+    im = ax.imshow(corr, cmap="RdBu_r", vmin=-1, vmax=1)
+    ax.set_xticks(range(len(variables)), variables, rotation=90, fontsize=8)
+    ax.set_yticks(range(len(variables)), variables, fontsize=8)
+    fig.colorbar(im, ax=ax, label="correlacion de Pearson")
+    ax.set_title("Correlacion entre las 17 variables")
+    fig.tight_layout(); guardar_figura(fig, "fig04_correlacion_variables.png")
     return ranking
 
 
@@ -308,7 +329,7 @@ def analizar_largo_ventana(df, ajustados, mejor):
     ax.set_xlabel("largo de la ventana (s)"); ax.set_ylabel("exactitud balanceada en prueba")
     ax.set_title("Mientras mas larga la ventana, mas facil distinguir las clases")
     ax.grid(alpha=0.3); ax.legend()
-    fig.tight_layout(); guardar_figura(fig, "fig05_largo_ventana.png")
+    fig.tight_layout(); guardar_figura(fig, "fig07_largo_ventana.png")
     print("[6] Largo de ventana:")
     print(tabla.pivot(index="largo_ms", columns="modelo", values="eb_prueba").round(3).to_string())
     return tabla
@@ -318,21 +339,21 @@ def analizar_largo_ventana(df, ajustados, mejor):
 # PASO 7. RESULTADOS: figuras de comparacion y matrices de confusion
 # =============================================================================
 def figuras_resultados(tabla, ajustados, X_te, y_te):
-    # Figura 3: exactitud balanceada en prueba de los 13 modelos
+    # Figura 5: exactitud balanceada en prueba de los 13 modelos
     t = tabla.iloc[::-1]
     colores = ["#d1495b" if m == "Naive Bayes" else "#30638e" for m in t["modelo"]]
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(figsize=(6, 4.8))
     ax.barh(t["modelo"], t["eb_prueba"], color=colores)
     for yy, v in enumerate(t["eb_prueba"]):
         ax.text(v + 0.005, yy, f"{v:.3f}", va="center", fontsize=8)
     ax.set_xlim(0, 1.08); ax.set_xlabel("exactitud balanceada en prueba")
     ax.set_title("Comparacion de modelos (Naive Bayes en rojo)")
-    fig.tight_layout(); guardar_figura(fig, "fig03_comparacion_modelos.png")
+    fig.tight_layout(); guardar_figura(fig, "fig05_comparacion_modelos.png")
 
-    # Figura 4: matrices de confusion de Naive Bayes y del mejor modelo
+    # Figura 6: matrices de confusion de Naive Bayes y del mejor modelo
     mejor = tabla.iloc[0]["modelo"] if tabla.iloc[0]["modelo"] != "Naive Bayes" \
         else tabla.iloc[1]["modelo"]
-    fig, axs = plt.subplots(1, 2, figsize=(10, 4.3))
+    fig, axs = plt.subplots(2, 1, figsize=(5.2, 9.4))
     for ax, nombre in zip(axs, ["Naive Bayes", mejor]):
         cm = confusion_matrix(y_te, ajustados[nombre].predict(X_te), labels=CLASES)
         ax.imshow(cm, cmap="Blues")
@@ -343,7 +364,7 @@ def figuras_resultados(tabla, ajustados, X_te, y_te):
         ax.set_xticks(range(len(CLASES)), CLASES, rotation=35, ha="right")
         ax.set_yticks(range(len(CLASES)), CLASES)
         ax.set_xlabel("clase predicha"); ax.set_ylabel("clase real"); ax.set_title(nombre)
-    fig.tight_layout(); guardar_figura(fig, "fig04_matrices_confusion.png")
+    fig.tight_layout(); guardar_figura(fig, "fig06_matrices_confusion.png")
 
     # Tabla por clase: sensibilidad (tasa de VP) y valor predictivo positivo (VPP)
     filas = []

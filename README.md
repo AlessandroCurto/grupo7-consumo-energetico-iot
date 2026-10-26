@@ -101,6 +101,6 @@ Naive Bayes confunde sobre todo `variable` con `parpadeo`: las dos tienen la mis
    - `resultados/tablas/comparacion_modelos.csv`: los 13 modelos con sus mejores parámetros y métricas.
    - `resultados/tablas/ranking_variables.csv`: la ganancia de información de cada variable.
    - `resultados/tablas/metricas_por_clase.csv`: sensibilidad (tasa de VP) y VPP de cada clase para Naive Bayes y el mejor modelo.
-   - `resultados/figuras/fig01` a `fig05`: las señales, el ranking, la comparación, las matrices de confusión y el largo de ventana.
+   - `resultados/figuras/fig01` a `fig07`: las señales, el ranking, la distribución de variables por clase, la correlación entre variables, la comparación de modelos, las matrices de confusión y el largo de ventana.
 
 Con la semilla 42, dos corridas dan los mismos números.
