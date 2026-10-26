@@ -1,0 +1,14 @@
+modelo,mejores_parametros,eb_validacion_cruzada,exactitud_prueba,eb_prueba,f1_macro_prueba,log_loss_prueba
+Gradient Boosting,"{'learning_rate': 0.05, 'n_estimators': 100}",0.9417,0.9667,0.9667,0.9665,0.1054
+Bosque aleatorio,"{'max_depth': None, 'n_estimators': 100}",0.9440,0.9639,0.9639,0.9636,0.1114
+Hist. Gradient Boosting,"{'learning_rate': 0.05, 'max_depth': 3}",0.9548,0.9639,0.9639,0.9638,0.1115
+Extra Trees,"{'max_depth': None, 'n_estimators': 100}",0.9512,0.9611,0.9611,0.9605,0.2127
+Regresion logistica,{'C': 100},0.9524,0.9528,0.9528,0.9515,0.1218
+AdaBoost,"{'learning_rate': 0.5, 'n_estimators': 50}",0.9190,0.9528,0.9528,0.9526,1.7102
+k-NN,{'n_neighbors': 5},0.9357,0.9444,0.9444,0.9415,0.9888
+Red neuronal MLP,"{'alpha': 0.0001, 'hidden_layer_sizes': (16,)}",0.9500,0.9417,0.9417,0.9392,0.1686
+SVM RBF,"{'C': 100, 'gamma': 0.01}",0.9476,0.9417,0.9417,0.9388,0.1855
+SVM lineal,{'estimator__C': 10},0.9464,0.9417,0.9417,0.9395,0.3731
+Arbol de decision,{'max_depth': 5},0.9286,0.9389,0.9389,0.9380,0.5180
+LDA,{'solver': 'svd'},0.9321,0.9389,0.9389,0.9343,0.7120
+Naive Bayes,{'var_smoothing': 1e-09},0.9262,0.9361,0.9361,0.9330,1.4389

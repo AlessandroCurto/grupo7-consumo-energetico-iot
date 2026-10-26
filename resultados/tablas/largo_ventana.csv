@@ -1,0 +1,9 @@
+largo_ms,modelo,eb_prueba
+200,Naive Bayes,0.8322
+200,Gradient Boosting,0.8667
+500,Naive Bayes,0.9361
+500,Gradient Boosting,0.9667
+1000,Naive Bayes,0.9778
+1000,Gradient Boosting,0.9833
+2000,Naive Bayes,1.0000
+2000,Gradient Boosting,0.9889
