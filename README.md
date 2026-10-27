@@ -29,6 +29,7 @@ Simulamos a escala un medidor inteligente. Un **ESP32** prende y apaga 3 LEDs (r
 | Archivo | Qué es |
 |---|---|
 | `captura_grupo7.ino` | Programa del ESP32: genera las clases y mide con el INA219 (50 lecturas por segundo) |
+| `demo_grupo7/demo_grupo7.ino` | Demo en vivo: el ESP32 genera las clases y Naive Bayes (entrenado en Python con ventanas de 1 s) predice la clase cada segundo dentro del ESP32 |
 | `capturar.py` | Lee el puerto serie y guarda las lecturas en `datos_grupo7.csv` |
 | `datos_grupo7.csv` | Datos captados: 300 capturas de 2 s (50 por clase), 30 000 lecturas |
 | `main.py` | Preparación, modelado y evaluación |
