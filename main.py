@@ -107,7 +107,7 @@ def cargar_datos():
 # PASO 2. PREPARACION DE LOS DATOS: de la senal a una fila por ventana
 # =============================================================================
 def caracteristicas_de_ventana(g):
-    """Resume las 100 lecturas de una ventana en variables numericas."""
+    """Resume las lecturas de una ventana (25 si dura 0,5 s) en 17 variables numericas."""
     i = g["corriente_mA"].to_numpy()
     v = g["voltaje_V"].to_numpy()
     p = g["potencia_mW"].to_numpy()
